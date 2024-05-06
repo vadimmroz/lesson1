@@ -8,6 +8,335 @@
     <title>Document</title>
 </head>
 <body>
+<header>
+    <h1>Using the Popover API (accessibly)</h1>
+</header>
+<main id="main">
+    <p class="intro">The goal of this explainer is to try to make some reasonable examples of how the new popover API
+        (<a href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" target="_blank">MDN</a>, <a
+                href="https://open-ui.org/components/popover.research.explainer/" target="_blank">Open UI Explainer</a>)
+        can be used, and show how to make them accessible. First, we'll get a few constraints into place, so we have a
+        shared understanding of what we're trying to do, then show some examples, and then wrap it up with some notes
+        and relevant WCAG.</p>
+    <h2 id="requirements">Requirements:</h2>
+    <ol aria-labelledby="requirements" class="intro">
+        <li><s>The popover content should never contain important information, only extra information for the user to
+            "dig deeper".</s> <a href="https://front-end.social/@Una/112333065155565155"> From feedback:</a> <em>...it's
+            possible for a popover to be used to contain important information when used for things like toasts or
+            menus.</em></li>
+        <li>The user needs to be able to tell that the popover trigger element will show extra information. (They need
+            to be able to perceive that we've got a tooltip/popover going on here.)
+        </li>
+        <li>If it can be activated on hover or focus, there are some extra constraints. See <a
+                href="https://www.w3.org/WAI/WCAG21/Understanding/content-on-hover-or-focus.html" target="_blank">WCAG
+            Success Criterion 1.4.13: Content on Hover or Focus</a>. <a
+                href="https://front-end.social/@Una/112333065155565155"> From feedback:</a> <em>this doesn't exist for
+            popover, but <code>interesttarget</code> is being worked on to provide support for hover/focus.</em></li>
+        <li>If it can be triggered with a click, it also needs to be able to be activated with a keyboard. See <a
+                href="https://www.w3.org/WAI/WCAG21/Understanding/keyboard.html" target="_blank">WCAG Success Criterion
+            2.1.1 Keyboard</a>.
+        </li>
+        <li><a href="https://front-end.social/@Una/112333065155565155"> From feedback:</a> <em>popover is only available
+            on buttons, intentionally</em>
+            <br/>My understanding: "Invoking attributes" are only supported on buttons (see <a
+                    href="https://open-ui.org/components/popover.research.explainer/#:~:text=Invoking%20attributes%20only%20supported%20on%20buttons"
+                    target="_blank">https://open-ui.org/components/popover.research.explainer</a>). From what I can
+            tell, this is what that means:
+            <ol>
+                <li><code>&lt;button type=[button|submit|reset]&gt;</code> (if the button would not otherwise submit a
+                    form)
+                </li>
+                <li><code>&lt;input type=[button|submit|reset|image]&gt;</code> (if it would not otherwise submit a
+                    form)
+                </li>
+                <li><code>&lt;input type=[text|email|password|search|tel|url]&gt;</code> (activated by down arrow only)
+                </li>
+            </ol>
+        </li>
+        <li>Note: a colleague has pointed out to me that there is an example in the popover explainer that <em>seems
+            to </em>directly contradict the previous point: <a
+                href="https://open-ui.org/components/popover.research.explainer/#manual">https://open-ui.org/components/popover.research.explainer/#manual</a>.
+            Further clarification of previous point is therefore warranted.
+        </li>
+        <li>Any HTML element can be given the <code>popover</code> attribute.</li>
+        <li>If the element is a semantic HTML element, it will retain its implicit role, even if it is popover
+            content.
+        </li>
+        <li>An explicit role can be provided to the element with the <code>popover</code> attribute. Noting that just
+            because you <em>can</em>, doesn't mean you <em>should</em>. Typically for accessibility purposes, leave the
+            semantic element with its implicit role unless you have a really really really, good reason for changing it.
+        </li>
+        <li>It seems as though a <code>&lt;div role="tooltip" popover&gt;</code> seems like a reasonable "typical"
+            usecase. <a href="https://front-end.social/@hdv/112333498561540277">From feedback:</a> <em>I agree but see
+                dialog, listbox and menu as just as reasonable use cases (see <a
+                        href="https://hidde.blog/popover-semantics/">https://hidde.blog/popover-semantics/</a>)</em>.
+        </li>
+    </ol>
+    <section class="example">
+        <h2>Example 1</h2>
+        <p class="intro">Let's say that we have a member of a group and for some reason we want to put their contact
+            information inside - of a popover instead of out in the open, because *insert some constraint here.* </p>
+        <h3 id="list-team">Team List</h3>
+        <ul aria-labelledby="list-team">
+            <li>Black Widow
+                <button class="popover-subtle" aria-label="member info" aria-expanded="false"
+                        popovertarget="membercard-bw">
+                    <svg viewBox="0 0 576 512" width="100" aria-hidden="true">
+                        <path d="M528 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h480c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-352 96c35.3 0 64 28.7 64 64s-28.7 64-64 64-64-28.7-64-64 28.7-64 64-64zm112 236.8c0 10.6-10 19.2-22.4 19.2H86.4C74 384 64 375.4 64 364.8v-19.2c0-31.8 30.1-57.6 67.2-57.6h5c12.3 5.1 25.7 8 39.8 8s27.6-2.9 39.8-8h5c37.1 0 67.2 25.8 67.2 57.6v19.2zM512 312c0 4.4-3.6 8-8 8H360c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H360c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H360c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16z"/>
+                    </svg>
+                </button>
+                <div id="membercard-bw" popover class="h-card card-popover" role="tooltip">
+                    <div class="u-photo">
+                        <!-- 						some screen reader only text should go here -->
+                        <svg viewBox="0 0 496 512" width="100" aria-hidden="true">
+                            <path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/>
+                        </svg>
+                    </div>
+                    <div class="p-name"><strong>Black Widow</strong></div>
+                    <div class="div3">Sales and Acquisitions</div>
+                    <a href="mailto:widow@avengers.com" class="u-email">widow@avengers.com</a>
 
+                </div>
+            </li>
+            <li>
+                Captain America
+                <button class="popover-subtle" aria-label="member info" aria-expanded="false"
+                        popovertarget="membercard-cap">
+                    <svg viewBox="0 0 576 512" width="100" aria-hidden="true">
+                        <path d="M528 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h480c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-352 96c35.3 0 64 28.7 64 64s-28.7 64-64 64-64-28.7-64-64 28.7-64 64-64zm112 236.8c0 10.6-10 19.2-22.4 19.2H86.4C74 384 64 375.4 64 364.8v-19.2c0-31.8 30.1-57.6 67.2-57.6h5c12.3 5.1 25.7 8 39.8 8s27.6-2.9 39.8-8h5c37.1 0 67.2 25.8 67.2 57.6v19.2zM512 312c0 4.4-3.6 8-8 8H360c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H360c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H360c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16z"/>
+                    </svg>
+                </button>
+                <div id="membercard-cap" popover class="h-card card-popover" role="tooltip">
+                    <div class="u-photo">
+                        <!-- 						some screen reader only text should go here -->
+                        <svg viewBox="0 0 496 512" width="100" aria-hidden="true">
+                            <path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/>
+                        </svg>
+                    </div>
+                    <div class="p-name"><strong>Captain America</strong></div>
+                    <div class="div3">Hostage Negotiation</div>
+                    <a href="mailto:thecap@avengers.com" class="u-email">thecap@avengers.com</a>
+
+                </div>
+            </li>
+            <li>Falcon
+                <button class="popover-subtle" aria-label="member info" aria-expanded="false"
+                        popovertarget="membercard-falc">
+                    <svg viewBox="0 0 576 512" width="100" aria-hidden="true">
+                        <path d="M528 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h480c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-352 96c35.3 0 64 28.7 64 64s-28.7 64-64 64-64-28.7-64-64 28.7-64 64-64zm112 236.8c0 10.6-10 19.2-22.4 19.2H86.4C74 384 64 375.4 64 364.8v-19.2c0-31.8 30.1-57.6 67.2-57.6h5c12.3 5.1 25.7 8 39.8 8s27.6-2.9 39.8-8h5c37.1 0 67.2 25.8 67.2 57.6v19.2zM512 312c0 4.4-3.6 8-8 8H360c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H360c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H360c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h144c4.4 0 8 3.6 8 8v16z"/>
+                    </svg>
+                </button>
+                <div id="membercard-falc" popover class="h-card card-popover" role="tooltip">
+                    <div class="u-photo">
+                        <!-- 						some screen reader only text should go here -->
+                        <svg viewBox="0 0 496 512" width="100" aria-hidden="true">
+                            <path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/>
+                        </svg>
+                    </div>
+                    <div class="p-name"><strong>Falcon</strong></div>
+                    <div class="div3">Training and Support</div>
+                    <a href="mailto:flyhigh@avengers.com" class="u-email">flyhigh@avengers.com</a>
+
+                </div>
+            </li>
+        </ul>
+
+    </section>
+    <section class="example">
+        <h2>Example 2</h2>
+        <p class="intro">In this example, let's say that we want to include a date in our paragraph, but we want the
+            user to be able to know that there's a little bit of extra information available.</p>
+
+        <p class="note">
+            <button popovertarget="mypopover" aria-expanded="false" class="popover-subtle popover-indicator--subtle">On
+                March 17, 1776
+            </button>
+            the British army evacuated Boston, ending the Seige of Boston. There were other interesting things that
+            happened on the various March 17ths throughout history, this is just the one that seemed interesting to me.
+            Can you tell where the extra info is in this little note?
+        </p>
+        <span id="mypopover" popover role="tooltip">17 Mar 1776 is how dates may be formatted elsewhere in the world that are not the United States.</span>
+    </section>
+    <section class="example">
+        <h2>Example 3 (WIP)</h2>
+        <p class="intro">Here we have a table where additional information can be tucked away since it's
+            additional/supporting information. I've also tried out some different combinations for perceivability on the
+            elements that have popovers.</p>
+        <table class="table--layout-fixed">
+            <thead>
+            <tr>
+                <th>Cluster</th>
+                <th>Server</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <button class="popover-subtle popover-indicator--subtle" popovertarget="cluster123-info"
+                            aria-expanded="false">cluster-123
+                    </button>
+                    <span id="cluster123-info" popover role="tooltip">
+							<dl>
+								<dt>Job</dt>
+								<dd>hdd-monitor-2</dd>
+								<dt>Namespace</dt>
+								<dd>some-namespace</dd>
+								<dt>Memory</dt>
+								<dd>1GB</dd>
+								<dt>CPU</dt>
+								<dd>500MHz</dd>
+							</dl>
+						</span>
+                </td>
+                <td>East-1</td>
+                <td>Available</td>
+            </tr>
+            <tr>
+                <td>
+                    <button class="popover-subtle popover-indicator--subtle" popovertarget="cluster456-info"
+                            aria-expanded="false">
+                        cluster-456
+                        <svg viewBox="0 0 448 512" width="100" title="database">
+                            <path d="M448 73.143v45.714C448 159.143 347.667 192 224 192S0 159.143 0 118.857V73.143C0 32.857 100.333 0 224 0s224 32.857 224 73.143zM448 176v102.857C448 319.143 347.667 352 224 352S0 319.143 0 278.857V176c48.125 33.143 136.208 48.572 224 48.572S399.874 209.143 448 176zm0 160v102.857C448 479.143 347.667 512 224 512S0 479.143 0 438.857V336c48.125 33.143 136.208 48.572 224 48.572S399.874 369.143 448 336z"/>
+                        </svg>
+                    </button>
+                    <span id="cluster456-info" popover role="tooltip">
+							cluster-456 popover. IMO it's kind of weird that the popover is perfectly centered on the page by default, but I guess all the years of developers having a hard time centering a thing on a page made it an understandable choice for the working group.
+						</span>
+                </td>
+                <td>West-2</td>
+                <td>In Maintenance</td>
+            </tr>
+            <tr>
+                <td>cluster-789</td>
+                <td>East-2</td>
+                <td>Available</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+    <section>
+        <h2>Notes and References</h2>
+        <p class="intro">There are still things missing in this API that make it feel like a catch-22, I think:
+        <ol class="intro">
+            <li>I don't have anything positioned properly, I'm just using the "native" positioning provided. That makes
+                the popover content feel disjoined from the popup invoker.
+            </li>
+            <li>if I were to use the <a href="https://open-ui.org/components/popover.research.explainer/#backdrop">backdrop
+                via CSS</a>, then the rest of the content would not pass color-contrast standards (if it's not inert and
+                still focusable, color-contrast requirements apply). Unless ,maybe it doesn't matter, because when you
+                keyboard navigate away from the element it closes? Not sure, TBQH.
+            </li>
+            <li>If I leave it as-is, it's possible that the popover would conceal interactive elements, which is also a
+                WCAG failure (focus not obscured).
+            </li>
+            <li>I don't yet see a way to provide an equivalent experience if the popover contents, albeit extraaneous,
+                stay inaccessible.
+            </li>
+        </ol>
+
+        <h3 id="relevant-wcag">Relevant WCAG Success Criteria</h3>
+        <p class="intro">These are the WCAG Success Criteria that I think would be relevant to the various common use
+            cases of this type of component.</p>
+        <ol aria-labelledby="relevant-wcag" class="intro">
+            <li><a href="https://www.w3.org/WAI/WCAG21/Understanding/non-text-content.html" target="_blank">1.1.1
+                Non-text Content (A):</a> All non-text content that is presented to the user has a text alternative that
+                serves the equivalent purpose.
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/info-and-relationships.html" target="_blank">1.3.1
+                    Info and Relationships (A):</a> Information, structure, and relationships conveyed through
+                presentation can be programmatically determined or are available in text.
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/meaningful-sequence.html" target="_blank">1.3.2
+                    Meaningful Sequence (A):</a> When the sequence in which content is presented affects its meaning, a
+                correct reading sequence can be programmatically determined.
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/identify-input-purpose.html" target="_blank">1.3.5
+                    Identify Input Purpose(AA):</a> The purpose of each input field collecting information about the
+                user can be programmatically determined when the input field serves a purpose identified in the Input
+                Purposes for User Interface Components section; and the content is implemented using technologies with
+                support for identifying the expected meaning for form input data.
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html" target="_blank">1.4.1 Use of
+                    Color (A):</a> Color is not used as the only visual means of conveying information, indicating an
+                action, prompting a response, or distinguishing a visual element.
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html" target="_blank">1.4.3
+                    Contrast Minimum (AA):</a> The visual presentation of text and images of text has a contrast ratio
+                of at least 4.5:1
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/resize-text.html" target="_blank">1.4.4 Resize Text
+                    (AA):</a> Except for captions and images of text, text can be resized without assistive technology
+                up to 200 percent without loss of content or functionality.
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/reflow.html" target="_blank">1.4.10 Reflow
+                    (AA):</a> Content can be presented without loss of information or functionality, and without
+                requiring scrolling in two dimensions
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/non-text-contrast.html" target="_blank">1.4.11
+                    Non-text Contrast (AA):</a> The visual presentation of the following have a contrast ratio of at
+                least 3:1 against adjacent color(s): user interface components; graphical objects.
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/text-spacing.html" target="_blank">1.4.12 Text
+                    Spacing (AA):</a> no loss of content or functionality occurs by setting all the following and by
+                changing no other style property: line height set to 1.5; spacing following paragraphs set to at least
+                2x the font size; letter-spacing set at least 0.12x of the font size, word spacing set to at least 0.16
+                times the font size.
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/content-on-hover-or-focus.html" target="_blank">1.4.13
+                    Content on Hover or Focus (AA):</a> Where receiving and then removing pointer hover or keyboard
+                focus triggers additional content to become visible and then hidden, the following are true:
+                dismissible, hoverable, persistent (see link)
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/keyboard.html" target="_blank">2.1.1 Keyboard
+                    (A):</a> All functionality of the content is operable through a keyboard interface.
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/no-keyboard-trap.html" target="_blank">2.1.2 No
+                    Keyboard Trap (A):</a> If keyboard focus can be moved to a component of the page using a keyboard
+                interface, then focus can be moved away from that component using only a keyboard interface.
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/focus-visible.html" target="_blank">2.4.7 Focus
+                    Visible (AA):</a> Any keyboard operable user interface has a mode of operation where the keyboard
+                focus indicator is visible.
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html" target="_blank">2.4.11
+                    Focus Not Obscured (Minimum) (AA):</a> When a user interface component receives keyboard focus, the
+                component is not entirely hidden due to author-created content.
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html" target="_blank">2.5.8
+                    Target Size (Minimum) (AA):</a> The size of the target for pointer inputs is at least 24 by 24 CSS
+                pixels (with some specific exceptions).
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/WCAG21/Understanding/name-role-value.html" target="_blank">4.1.2 Name,
+                    Role, Value (A):</a> For all user interface components, the name and role can be programmatically
+                determined; states, properties, and values that can be set by the user can be programmatically set; and
+                notification of changes to these items is available to user agents, including assistive technologies.
+            </li>
+        </ol>
+    </section>
+</main>
+
+<footer>
+    <p>What other examples would you want to see here? Did I get something wrong? Feel free to let me know! I'm <a
+            href="https://front-end.social/@a11yMel" target="_blank">@a11yMel@front-end.social</a> on Mastodon.</p>
+    <p><small>Updated on April 25 to include feedback I've received.</small></p>
+</footer>
 </body>
 </html>
